@@ -1,0 +1,199 @@
+# СТВОРЕННЯ БАЗИ ДАНИХ
+  CREATE DATABASE library;
+
+# ПЕРЕГЛЯД СТВОРЕНИХ БАЗ ДАННИХ
+  SHOW DATABASES;
+
+# ПІДКЛЮЧЕННЯ ДО БАЗИ ДАНИХ
+  USE library;
+
+# СТВОРЕННЯ ТАБЛИЦІ
+  CREATE TABLE genre(id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50) NOT NULL);
+
+# ВИДАЛЕННЯ БАЗИ ДАНИХ
+  DROP DATABASE library;
+
+# ПЕРЕГЛЯД ТАБЛИЦЬ
+  SHOW TABLES;
+
+# ОТРИМАТИ ДАНІ З ТБЛИЦІ
+  всі поля:
+  SELECT * FROM genre;
+  фільтер по id
+  SELECT * FROM genre WHERE id=2;
+  SELECT * FROM genre WHERE id<5;
+
+# ДОДАТИ ДАНІ В ТАБЛИЦЮ
+  INSERT INTO genre(name) VALUES("Детектив");
+
+# СТВОРЮЄМО ТАБЛИЦЮ
+  CREATE TABLE author(
+-> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+-> first_name VARCHAR(50) NOT NULL,
+-> last_name VARCHAR(60) NOT NULL,
+-> birthday DATE
+-> );
+  
+  CREATE TABLE genre(
+-> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+-> name VARCHAR(50) NOT NULL
+-> );
+
+# ВИДАЛЕННЯ ТАБЛТЦІ
+  DROP TABLE genre;
+
+# ДОДАВАННЯ ЗНАЧЕНЬ ДО ТАБЛИЦІ author;
+  INSERT INTO author(first_name, last_name, birthday)
+-> VALUES("Стівен", "Кінг", "1942-09-22");
+ 
+  INSERT INTO auhor(first_name, last_name, birthday)
+-> VALUES("Олександр", "Пушкін", "1799-06-06");
+  
+  INSERT INTO auhor(first_name, last_name, birthday)
+-> VALUES("Чингиз", "Айтматов", "1928-12-12");
+
+# ПЕРЕГЛЯД ДАНИХ В ТАБЛИЦІ author;
+  SELECT * FROM author;
++----+--------------------+------------------+------------+
+| id | first_name         | last_name        | birthday   |
++----+--------------------+------------------+------------+
+|  1 | Стівен             | Кінг             | 1942-09-21 |
+|  2 | Олександр          | пушкін           | 1799-06-06 |
+|  3 | Чингиз             | Айтматов         | 1928-12-12 |
++----+--------------------+------------------+------------+
+3 rows in set (0.000 sec)
+
+# ДОДАВАННЯ ДАНИХ В ТАБЛИЦЮ genre;
+  INSERT INTO genre(name) VALUES("Хорор");
+
+  INSERT INTO genre(name) VALUES("Роман");
+
+  INSERT INTO genre(name) VALUES("Повість");
+
+  INSERT INTO genre(name) VALUES("Детектив");
+
+# ПЕРЕГЛЯД ДАНИХ В ТАБЛИЦІ genre;
+  SELECT * FROM genre;
++----+------------------+
+| id | name             |
++----+------------------+
+|  1 | Хорор            |
+|  2 | Роман            |
+|  3 | Повість          |
+|  4 | Детектив         |
++----+------------------+
+4 rows in set (0.001 sec)
+
+# ВИДАЛЕННЯ ДАНИХ З ТАБЛИЦІ
+  DELETE FROM genre WHERE id=5;
+
+# ОНОВЛЕННЯ ДАНИХ В ТАБЛИЦІ ПО ID
+  UPDATE genre SET name="Фантастика" WHERE id=6;
+
+# СТВОРЕННЯ ТАБЛИЦІ book;
+  CREATE TABLE book(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(255),
+    -> published DATE,
+    -> author_id INTEGER NOT NULL,
+    -> genre_id INTEGER NOT NULL,
+    -> FOREIGN KEY(author_id) REFERENCES author(id),
+    -> FOREIGN KEY(genre_id) REFERENCES genre(id)
+    -> );
+
+# ПЕРЕГЛЯД ТАБЛИЦЬ БАЗИ library;
+  SHOW TABLES;
++-------------------+
+| Tables_in_library |
++-------------------+
+| author            |
+| book              |
+| genre             |
++-------------------+
+3 rows in set (0.000 sec)
+
+# ОПИСУЄМО ТАБЛИЦЮ book;
+  DESCRIBE book;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| id        | int(11)      | NO   | PRI | NULL    | auto_increment |
+| name      | varchar(255) | YES  |     | NULL    |                |
+| published | date         | YES  |     | NULL    |                |
+| author_id | int(11)      | NO   | MUL | NULL    |                |
+| genre_id  | int(11)      | NO   | MUL | NULL    |                |
++-----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.001 sec)
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ author;
+  SELECT * FROM author;
++----+--------------------+------------------+------------+
+| id | first_name         | last_name        | birthday   |
++----+--------------------+------------------+------------+
+|  1 | Стівен             | Кінг             | 1942-09-21 |
+|  2 | Олександр          | Пушкін           | 1799-06-06 |
+|  3 | Чингиз             | Айтматов         | 1928-12-12 |
++----+--------------------+------------------+------------+
+3 rows in set (0.000 sec)
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ genre;
+  SELECT * FROM genre;
++----+----------------------+
+| id | name                 |
++----+----------------------+
+|  1 | Хорор                |
+|  2 | Роман                |
+|  3 | Повість              |
+|  4 | Детектив             |
+|  6 | Фантастика           |
++----+----------------------+
+5 rows in set (0.000 sec)
+
+# ДОДАВАННЯ ДАНИХ В ТАБЛИЦЮ book;
+  INSERT INTO book(name, published, author_id, genre_id)
+    -> VALUES("Оно", "1986-09-15", 1, 1);
+
+  INSERT INTO book(name, published, author_id, genre_id)
+    -> VALUES("Коли падали гори", "2006-01-01", 3, 2);
+
+  INSERT INTO book(name, published, author_id, genre_id)
+    -> VALUES("Дубровський", "1842-01-01", 2, 2);
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ book;
+  SELECT * FROM book;
++----+--------------------------------+------------+-----------+----------+
+| id | name                           | published  | author_id | genre_id |
++----+--------------------------------+------------+-----------+----------+
+|  1 | Оно                            | 1986-09-15 |         1 |        1 |
+|  2 | Коли падали гори               | 2006-01-01 |         3 |        2 |
+|  3 | Дубровський                    | 1842-01-01 |         2 |        2 |
++----+--------------------------------+------------+-----------+----------+
+
+# ПЕРЕГЛЯДАЄМО ДАНІ З ТАБЛИЦІ book ПО name ТА published
+  SELECT name, published FROM book;
++--------------------------------+------------+
+| name                           | published  |
++--------------------------------+------------+
+| Оно                            | 1986-09-15 |
+| Коли падали гори               | 2006-01-01 |
+| Дубровський                    | 1842-01-01 |
++--------------------------------+------------+
+
+# ПЕРЕГЛЯДАЄМО ДІНІ ЗТАБЛИЦІ book ПО ID
+  SELECT * FROM book WHERE genre_id=2;
++----+--------------------------------+------------+-----------+----------+
+| id | name                           | published  | author_id | genre_id |
++----+--------------------------------+------------+-----------+----------+
+|  2 | Коли падали гори               | 2006-01-01 |         3 |        2 |
+|  3 | Дубровський                    | 1842-01-01 |         2 |        2 |
++----+--------------------------------+------------+-----------+----------+
+
+# ПЕРЕГЛЯДАЄМО ДАНІ З ТАБЛИЦІ book ПО published БІЛЬШЕ > "DATE"
+  SELECT * FROM book WHERE published > "1900-01-01";
++----+--------------------------------+------------+-----------+----------+
+| id | name                           | published  | author_id | genre_id |
++----+--------------------------------+------------+-----------+----------+
+|  1 | Оно                            | 1986-09-15 |         1 |        1 |
+|  2 | Коли падали гори               | 2006-01-01 |         3 |        2 |
++----+--------------------------------+------------+-----------+----------+
+

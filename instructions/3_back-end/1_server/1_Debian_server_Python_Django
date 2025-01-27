@@ -1,0 +1,219 @@
+# Конфігурація Debian серверу для розробки Python/Django
+
+# 1) Створення vps
+	# Заходимо в особистий кабінет провайдера у розділ vps
+	# Підбираємо необхідні параметри для vps
+	# встановлюємо Debian на vps та отримуємо ssh ip
+	# змінюємо пароль root
+	
+	# конект по ssh з паролем
+	➜  ~ ssh root@185.25.118.175
+	# оновлення репозиторію на vps
+	➜  ~ sudo apt-get update
+	# встановлення застосунків
+	➜  ~ sudo apt-get install -y vim mosh tmux htop git curl wget unzip zip gcc build-essential make
+		# vim - редактор
+		# mosh - upgrade ssh який тримає зєднання більш надійніше
+		# tmax - термінальний мультиплексор
+		# htop - диспетчер процесів
+		# git - система управлінням версій
+		# curl - утиліта для відправки ррез запитів...??
+		# wget - для завантаження зовнішніх штук...??
+		# unzip - обгортка для роботи з архівами 
+		# zip - обгортка для роботи з архівами
+		# gcc - компілятор для збірки із скачаних застосунків
+		# build-essential - компілятор для збірки скачаних застосунків 
+		# make - коппілятор для збірки скачаних застоссунків
+	
+	# якщо не створений користувач www
+	➜  ~ sudo adduser www
+	# задаємо користувачу www права адміністратора додавши його в групу sudo
+	  sudo vim /etc/sudoers
+	  [User privilege specification]
+	  root ALL=(ALL:ALL) ALL
+	  www  ALL=(ALL:ALL) ALL
+	# виходимо із root@ip командою exit
+	# копіюємо приватний ключ на сервер командою
+	➜  ~ ssh-copy-id www@ip
+	# вводимо пароль
+	# логінемось без пароля по ssh
+	➜  ~ ssh www@ip
+	
+# 2) Істановлення зєднання з vps із домашньої linux
+ 	# генеруємо ssh для домашньої linux
+	➜  ~ ssh-keygen
+		/home/a3888s/.ssh - знаходяться ssh ключі (приватний та публічний),
+		knowb_hosts, known_hosts.old - зберігаються дані підключень.
+ 	# копіюємо публічний ключ на сервер 
+	➜  ~ ssh-copy-id user_name@ip,
+ 	# вводимо пароль.
+ 	# логінемось без пароля
+	➜  ~ ssh user_name@ip
+
+# 4) Налаштування доступу по ssh
+	# відкриваємо файл конфігурацій ssh
+	➜  ~ sudo vim /etc/ssh/sshd_cofig
+		# дозволяємо конект користувачу www
+		AllowUsers www
+		# забороняємо логін для root
+		PermitRootLogin no
+		# забороняємо вхід ssh по паролю
+		PasswordAuthentication no
+	# рестартуємо ssh
+	➜  ~ sudo service ssh restart
+	# виходимо із vps командою exit
+	# конектимось через mosh
+	➜  ~ mosh www@ip
+	
+# 5) Встановлення необхідних застосунків
+	➜  ~ sudo apt-get install -y zsh tree redis-server nginx zlib1g-dev libbz2-dev libreadline-dev llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev liblzma-dev python3-dev python3-lxml libxslt1-dev libffi-dev libssl-dev gnumeric libsqlite3-dev libpq-dev libxml2-dev libjpeg-dev libfreetype6-dev libcurl4-openssl-dev supervisor
+	# встановлення oh-my-zsh
+	➜  ~ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+	# коригування oh-my-zsh
+	➜  ~ vim ~/.zshrc
+		змініємо команду clear на cls
+		alias cls="clear"
+	# зберігаємо та закриваємо
+	# встановлюємо zsh за замовчуванням
+	➜  ~ chsh -s $(which zsh)
+
+# 6) Встановлення Python 3.11
+	# створюємо папку ~/code
+	➜  ~ mkdir ~/code
+	# завантажуємо Python
+	➜  ~ wget https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tgz
+	# розархівовуємо
+	➜  ~ tar xvf Python-3.11.*
+	# переходимо в папку Puthon 3.11.*
+	➜  ~ cd Python 3.11.*
+	
+	# створюємо в /home/www папку .python, в ній буде встановлено всі залежності Python
+	# mkdir ~/.python
+ 	# вказуємо директорію в якій буде встановлено Python
+ 	➜  ~ ./configure --enable-optimizations --prefix=/home/www/.python
+ 	# запускаємо make...??
+ 	➜  ~ make -j8
+ 	
+ 	# встановлення
+ 	➜  ~ sudo make altinstall
+ 	# оновлюємо pip
+ 	➜  ~ sudo /home/www/.python/bin/python3.11 -m pip install -U pip
+ 	# видаляємо папку і архів з Python
+ 	➜  ~ sudo rm -rf Python-3.11.1
+ 	
+ 	# перевіряємо чи встановився Python в папку .Python
+ 	➜  ~ ~/.python/bin/python3.11
+ 	# прокидуємо Python3.11 d zsh
+ 	➜  ~ vim ~/.zshrc
+ 		export PATH=$PATH:/home/www/.python/bin
+ 	# перезапускаємо файл .zshrc
+ 	➜  ~ . ~/.zshrc
+ 	
+ 	# переходимо в папку /home/www/code
+ 	# створюємо папку з проектом (наприклад project1)
+ 	# переходимо в папку з проектом
+ 	# створюємо віртуальне середовище venv
+ 	➜  ~ python3.11 -m venv env
+ 	# активуємо віртуальне середовище
+	➜  ~ . env/bin/activate
+ 	# оновлюємо pip
+ 	➜  ~ pip install -U pip
+ 
+# 7) Встановлюємо Django
+ 	
+ 	➜  ~ pip install django
+	# встановлюємо freeze
+	➜  ~ pip freeze > requirements.txt
+	# перевіряємо файл requirements.txt
+	➜  ~ vim requirements.txt
+
+	# можемо клонувати проект із git та налаштовувати його
+
+	# створюємо новий проект в папці code/project1
+	➜  ~ django-admin startproject project_name
+	 
+	# переходимо в папку code/project1/project1
+	# перевіряємо manage.py shell
+	➜  ~ ./manage.py shell
+	# встановлюємо ipython в папці code/project1/project1
+	➜  ~ pip install ipython
+	
+	# створюємо django застосунк в папці code/project1/project1
+	➜  ~ ./manage.py startapp app_name (наприклад first)
+	
+	# додаємо створений застосунок в налаштуваннях проекту
+	➜  ~ vim project_name
+	# settings.py
+		INSTALLED_APPS 'app_name'
+	# додаємо ip хоста в налаштуваннях project_name
+		ALLOWED_HOSTS = ['IP']
+	
+	# запускаємо сервер
+	➜  ~ ./manage.py runserver 0.0.0.0:8000
+	
+	# налаштування production ready server
+	# завантажуємо gunicorn
+	➜  ~ pip install gunicorn
+	# встановлення freeze
+	➜  ~ pip freeze > ../requirements.txt
+	 
+# 7) Створення gunicorn
+	# створюємо gunicorn_config в папці /home/www/project1/project1
+	➜  ~ vim gunicorn_config.py
+		command = '/home/www/code/project1/env/bin/gunicorn'
+		pythonpath = '/home/www/code/project1/project1'
+		bind = '127.0.0.1:8001'
+		workers = 3
+		user = 'www'
+		limit_request_fields = 32000
+		limit_request_field_size = 0
+		raw_env = 'DJANGO_SETTINGS_MODULE=project1.settings'
+	# в папці /home/www/code/project1 створюємо папку bin
+	➜  ~ mkdir bin
+	
+	# створюємо start_gunicorn.sh в папці bin
+		➜  ~ vim start_gunicorn.sh
+		#!/bin/bash
+		source /home/www/code/project1/env/bin/activate
+		source /home/www/code/project1/env/bin/postactivate
+		exec gunicorn  -c "/home/www/code/project1/project1/gunicorn_config.py" 		project1.wsgi
+		
+	# переходимо в папку /home/www/code/project1
+	# встановлюємо права на виконання файлу start_gunicorn.sh
+	➜  ~ sudo chmod +x bin/start_gunicorn.sh
+	#
+	# запускаємо gunicorn з папки /home/www/code/project1
+	➜  ~ . ./bin/start_gunicorn.sh
+	#
+	# налаштовуємо проксування запитів nginx на gunicorn
+	➜  ~ sudo vim /etc/nginx/sites-enabled/
+	# default
+        location / {
+                proxy_pass http://185.25.118.175:8001;
+                proxy_set_header X-Forwarded_Host $server_name;
+                proxy_set_header X-Real-IP $remote_addr;
+                add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
+                add_header Access-Control-Allow-Origin *;
+        }
+
+	# рестартуємо nginx
+	➜  ~ sudo service nginx restart
+	# піднімаємо gunicorn із папки /home/www/code/project1
+	➜  ~ . ./bin/start_gunicorn.sh
+	# 
+# 8) Налаштування гіпервізора
+	
+	# створюємо файл конфігурації
+	➜  ~ sudo vim /etc/supervisor/conf.d/project1.conf
+		[program:gunicorn]
+		command=/home/www/code/project1/bin/start_gunicorn.sh
+		user=www
+		process_name=%(program_name)s
+		numproc=1
+		autostart=1
+		autorestart=1
+		redirect_stderr=true
+	
+	# перезапуск supervisor
+	➜  ~ sudo service supervisor stop
+	➜  ~ sudo service supervisor start	

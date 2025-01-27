@@ -1,0 +1,61 @@
+# Робота з Git
+
+# ініціювання git в папці проекту
+  git init
+
+# перевірка статусу
+  git status
+	# branch - гілки (відображення гілок розробки проекту)
+	# commit - мітка версії (відображення змін розробки коду проекту)
+	# tracked files - статус трекінга файлу
+
+# додавання файлів в git
+  git add name_file - додавання конкретного файлу
+  git add . - додавання всіх папок та файлів
+
+# видалення файлів з git
+  git rm --cached name_file.txt
+
+# створення commit
+  git commit -m "name_commit"
+
+# створення файлу .gitignore в папці проекту
+  sudo vim .gitignore
+	# file_name.txt
+	# /dir_name.txt
+
+# створення branch(гілки)
+  git branch - перевірка статусу
+  git branch branch_name - створюємо нову гілку
+  git branch -D branch_name - видалення гілки
+  git checkout branch_name - перехід на іншу гілку
+  git checkout -b branch_name - перехід та створення гілки
+  
+# створення репозиторію на github.com
+  new repositore
+	# owner
+	# repositore name
+	# public and private
+	# creatre repositore
+# налаштування git config
+  git config --global user.name "user_name" - додавання user_name користувача
+  git config --global user.email "user_email" - додавання email користувача
+  git config -l - перевірка статусу файлу config
+ 
+# привязка локального репозиторію до віддаленого репозиторію
+  git remote add origin https://github.com/a3888s/spaceof_supply.git
+
+# вигрузка в github.com
+  git push -u origin main - перша вигрузка
+  git push - повторна вигрузка
+
+# скачування з github.com
+  git clone https://github.com/a3888s/spaceof_supply.git
+
+# оновлення локадьних файлів з github.com
+   git pull
+
+# порядок внесення змін
+  git add . - додаємо нові файли до локольного трекера
+  git commit -m "name_commit" - створення коміту з назвою
+  git push - вивантаження в репозиторій

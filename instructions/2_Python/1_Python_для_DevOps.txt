@@ -1,0 +1,18 @@
+Матеріали: https://github.com/PacktPublishing/Mastering-Python-Networking-Third-Edition
+
+ТЕРМІНИ:
+
+TCP(Transmission Control Protocol) - протокол передачі даних;
+OSI(Open Systems Interconnection) - модель взаємодії відкритих систем;
+UDP(User Datagram Protocol) - передавання користувацьких діаграм;
+LAN(Local Area Network) - локальна обрахувальна мережа;
+ISP(Internet Service Provider) - постачальник послуг інтернету, або інтернет провайдер;
+
+Хост - це кінцевий вузол мережі, який взаємодіє з іншими вузлами.
+IoT(Internet of Things) - інтернет сущосней;
+ЦОД - центер обробки даних(датацентер);
+MDF(Main Distribution Frame) - головний розподільчий пункт;
+IDF(Intermediate Distribution Frame) - проміжний розподільчий пункт;
+IaaS(Infrastructure as a Service) - інфраструктура як послуга;
+
+

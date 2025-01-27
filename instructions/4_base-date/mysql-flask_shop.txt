@@ -1,0 +1,477 @@
+# ВІДКРИВАЄМО MySQL
+  sudo mysql
+
+# СТВОРЮЄМО БАЗУ ДАНИХ
+  CREATE DATABASE flask_shop;
+
+# ПЕРЕГЛЯД ТАБЛИЦЬ
+  SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| flask_shop         |
+| information_schema |
+| library            |
+| mysql              |
+| performance_schema |
++--------------------+
+5 rows in set (0.001 sec)
+
+# ПІДКЛЮЧАЄМОСЬ ДО flask_shop;
+  USE flask_shop;
+
+# СТВОРЮЄМО ТАБЛИЦЮ Category;
+  CREATE TABLE Category(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(50) NOT NULL
+    -> );
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Category;
+  DESCRIBE Category;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name  | varchar(50) | NO   |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+2 rows in set (0.001 sec)
+
+# СТВОРЮЄМО ТАБЛИЦЮ Brand;
+  CREATE TABLE Category(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(50) NOT NULL
+    -> );
+
+# ПЕРЕГЛЯДАЄМО ВЛАСТИВОСТІ ТАБЛИЦІ Brand;
+  DESCRIBE Brand;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name  | varchar(50) | NO   |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+2 rows in set (0.001 sec)
+
+# СТВОРЮЄМО ТАБЛИЦЮ Product;
+  CREATE TABLE Product(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> name VARCHAR(255) NOT NULL,
+    -> price DECIMAL(10,2) NOT NULL,
+    -> description TEXT,
+    -> is_available BOOLEAN DEFAULT true,
+    -> created DATETIME DEFAULT now(),
+    -> updated DATETIME DEFAULT now(),
+    -> category_id INTEGER NOT NULL,
+    -> brand_id INTEGER NOT NULL,
+    -> FOREIGN KEY(brand_id) REFERENCES Brand(id),
+    -> FOREIGN KEY(category_id) REFERENCES Category(id));
+
+# ПЕРЕЛЯДАЄМО ВЛАСТИВОСТІ ТАБЛИЦІ Product;
+  DESCRIBE Product;
++--------------+---------------+------+-----+---------------------+----------------+
+| Field        | Type          | Null | Key | Default             | Extra          |
++--------------+---------------+------+-----+---------------------+----------------+
+| id           | int(11)       | NO   | PRI | NULL                | auto_increment |
+| name         | varchar(255)  | NO   |     | NULL                |                |
+| price        | decimal(10,2) | NO   |     | NULL                |                |
+| description  | text          | YES  |     | NULL                |                |
+| is_available | tinyint(1)    | YES  |     | 1                   |                |
+| created      | datetime      | YES  |     | current_timestamp() |                |
+| updated      | datetime      | YES  |     | current_timestamp() |                |
+| category_id  | int(11)       | NO   | MUL | NULL                |                |
+| brand_id     | int(11)       | NO   | MUL | NULL                |                |
++--------------+---------------+------+-----+---------------------+----------------+
+9 rows in set (0.001 sec)
+
+
+# СТВОРЮЄМО ТАБЛИЦЮ User;
+  CREATE TABLE User(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> email VARCHAR(100) NOT NULL,
+    -> password VARCHAR(20) NOT NULL,
+    -> birthday DATE,
+    -> is_active BOOLEAN DEFAULT true,
+    -> is_staff BOOLEAN DEFAULT false,
+    -> created DATETIME DEFAULT now()
+    -> );
+
+# ПЕРЕГЛЯДАЄМО ВЛАСТИВОСТІ ТАБЛИЦІ User;
+  DESCRIBE Product;
++-----------+--------------+------+-----+---------------------+----------------+
+| Field     | Type         | Null | Key | Default             | Extra          |
++-----------+--------------+------+-----+---------------------+----------------+
+| id        | int(11)      | NO   | PRI | NULL                | auto_increment |
+| email     | varchar(100) | NO   |     | NULL                |                |
+| password  | varchar(20)  | NO   |     | NULL                |                |
+| birthday  | date         | YES  |     | NULL                |                |
+| is_active | tinyint(1)   | YES  |     | 1                   |                |
+| is_staff  | tinyint(1)   | YES  |     | 0                   |                |
+| created   | datetime     | YES  |     | current_timestamp() |                |
++-----------+--------------+------+-----+---------------------+----------------+
+7 rows in set (0.002 sec)
+
+# СТВОРЮЄМО ТАБЛИЦЮ Shop_order;
+  CREATE TABLE Shop_order(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> user_id INTEGER NOT NULL,
+    -> status VARCHAR(25) NOT NULL,
+    -> address VARCHAR(200) NOT NULL,
+    -> mobile VARCHAR(15),
+    -> is_archive BOOLEAN DEFAULT false,
+    -> created DATETIME DEFAULT NOW(),
+    -> FOREIG KEY(user_id) REFERENCES User(id)
+    -> );
+
+# ПЕРЕГЛЯДАЄМО ВЛАСТИВОСТІ ТАБЛИЦІ Shop_order;
+  DESCRIBE Shop_order;
++------------+--------------+------+-----+---------------------+----------------+
+| Field      | Type         | Null | Key | Default             | Extra          |
++------------+--------------+------+-----+---------------------+----------------+
+| id         | int(11)      | NO   | PRI | NULL                | auto_increment |
+| user_id    | int(11)      | NO   | MUL | NULL                |                |
+| status     | varchar(25)  | NO   |     | NULL                |                |
+| address    | varchar(200) | NO   |     | NULL                |                |
+| mobile     | varchar(15)  | YES  |     | NULL                |                |
+| is_archive | tinyint(1)   | YES  |     | 0                   |                |
+| created    | datetime     | YES  |     | current_timestamp() |                |
++------------+--------------+------+-----+---------------------+----------------+
+7 rows in set (0.002 sec)
+
+# СТВОРЮЄМО ТАБЛИЦЮ Order_item;
+  CREATE TABLE Order_item(
+    -> id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    -> order_id INTEGER NOT NULL,
+    -> product_id INTEGER NOT NULL,
+    -> quantity INTEGER NOT NULL DEFAULT 1,
+    -> FOREIGN KEY(order_id) REFERENCES Shop_order(id),
+    -> FOREIGN KEY(product_id) REFERENCES Product(id)
+    -> );
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Order_item;
+  DESCRIBE Order_item;
++------------+---------+------+-----+---------+----------------+
+| Field      | Type    | Null | Key | Default | Extra          |
++------------+---------+------+-----+---------+----------------+
+| id         | int(11) | NO   | PRI | NULL    | auto_increment |
+| order_id   | int(11) | NO   | MUL | NULL    |                |
+| product_id | int(11) | NO   | MUL | NULL    |                |
+| quantity   | int(11) | NO   |     | 1       |                |
++------------+---------+------+-----+---------+----------------+
+4 rows in set (0.001 sec)
+
+# ПЕРЕГЛЯД ТАБЛИЦЬ БАЗИ flask_shop;
+  SHOW TABLES;
++----------------------+
+| Tables_in_flask_shop |
++----------------------+
+| Brand                |
+| Category             |
+| Order_item           |
+| Product              |
+| Shop_order           |
+| User                 |
++----------------------+
+6 rows in set (0.000 sec)
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ Category;
+  INSERT INTO Category(name) VALUES("Теефони");
+  INSERT INTO Category(name) VALUES("Ноутбуки");
+  INSERT INTO Category(name) VALUES("Планшети");
+  INSERT INTO Category(name) VALUES("Монітори");
+  INSERT INTO Category(name) VALUES("Електронні книги");
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Category;
+  SELECT * FROM Category;
++----+---------------------------------+
+| id | name                            |
++----+---------------------------------+
+|  1 | Телефони                        |
+|  2 | Ноутбуки                        |
+|  3 | Планшети                        |
+|  4 | Монітори                        |
+|  5 | Електронні книги                |
++----+---------------------------------+
+5 rows in set (0.001 sec)
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ Brand;
+  INSERT INTO Brand(name) VALUES
+    -> ("Apple"),
+    -> ("Samsung")
+    -> ("Xiomi")
+    -> ("Asus")
+    -> ("Lenovo"),
+    -> ("HP"),
+    -> ("Acer"),
+    -> ("LG");
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Brand;
+  SELECT * FROM Brand;
++----+---------+
+| id | name    |
++----+---------+
+|  1 | Apple   |
+|  2 | Samsung |
+|  3 | Xiomi   |
+|  4 | Asus    |
+|  5 | Lenovo  |
+|  6 | HP      |
+|  7 | Acer    |
+|  8 | LG      |
++----+---------+
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ ПРОДУКТ ЧКРЕЗ ФАЙЛ product_insert.sql
+  INSERT INTO Product(name, price, description, category_id, brand_id)
+  VALUES
+  ("13.3 Ноутбук Apple MacBook Air золотистий", 1200, "", 2, 1),
+  ("Iphone 14 Pro", 999, "", 1, 1),
+  ("Ipad 12 Mini", 600, "", 3, 1),
+  ("Samsung Galaxy A13 128Gb", 200, "", 1, 2),
+  ("PocketBook 606 White", 120, "", 5, 8),
+  ("23.8 Монітор Asus VA247HE чорний", 150, "", 4, 4);
+
+# ЗАВАНТАЖУЄМО ФАЙЛ product_insert.sql ЧЕРЕЗ MariaDB;
+  source /home/www/code/python_kazah/sql_ptoject/product_insert.sql
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Product;
+  SELECT * FROM Product;
++----+------------------------------------------------------------+---------+-------------+--------------+---------------------+---------------------+-------------+----------+
+| id | name                                                       | price   | description | is_available | created             | updated             | category_id | brand_id |
++----+------------------------------------------------------------+---------+-------------+--------------+---------------------+---------------------+-------------+----------+
+|  1 | 13.3 Ноутбук Apple MacBook Air золотистий                  | 1200.00 |             |            1 | 2023-02-22 11:57:51 | 2023-02-22 11:57:51 |           2 |        1 |
+|  2 | Iphone 14 Pro                                              |  999.00 |             |            1 | 2023-02-22 11:57:51 | 2023-02-22 11:57:51 |           1 |        1 |
+|  3 | Ipad 12 Mini                                               |  600.00 |             |            1 | 2023-02-22 11:57:51 | 2023-02-22 11:57:51 |           3 |        1 |
+|  4 | Samsung Galaxy A13 128Gb                                   |  200.00 |             |            1 | 2023-02-22 11:57:51 | 2023-02-22 11:57:51 |           1 |        2 |
+|  5 | PocketBook 606 White                                       |  120.00 |             |            1 | 2023-02-22 11:57:51 | 2023-02-22 11:57:51 |           5 |        8 |
+|  6 | 23.8 Монітор Asus VA247HE чорний                           |  150.00 |             |            1 | 2023-02-22 11:57:51 | 2023-02-22 11:57:51 |           4 |        4 |
++----+------------------------------------------------------------+---------+-------------+--------------+---------------------+---------------------+-------------+----------+
+6 rows in set (0.000 sec)
+
+# ЗАВДАННЯ
+  ВИВЕСТИ НАЗВУ, ЦІНУ ПРОДУКТУ, НАЗВУ КАТЕГОРІЇ В ОДНОМУ ЗАПИТІ ВИКОРИСТОВУЮЧИ LEFT JOIN.
+  SELECT Product.name AS product_name, Product.price, Category.name AS category_name FROM Product
+    -> LEFT JOIN Category ON Product.category_id=Category.id;
++------------------------------------------------------------+---------+---------------------------------+
+| product_name                                               | price   | category_name                   |
++------------------------------------------------------------+---------+---------------------------------+
+| 13.3 Ноутбук Apple MacBook Air золотистий                  | 1200.00 | Ноутбуки                        |
+| Iphone 14 Pro                                              |  999.00 | Телефони                        |
+| Ipad 12 Mini                                               |  600.00 | Планшети                        |
+| Samsung Galaxy A13 128Gb                                   |  200.00 | Телефони                        |
+| PocketBook 606 White                                       |  120.00 | Електронні книги                |
+| 23.8 Монітор Asus VA247HE чорний                           |  150.00 | Монітори                        |
++------------------------------------------------------------+---------+---------------------------------+
+6 rows in set (0.000 sec)
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ User ЧЕРЕЗ ФАЙЛ user_insert.sql;
+  INSERT INTO User(email, password, birthday)
+  VALUES
+    ("sowdirect@gmail.com", "52432225", "1992-03-24"),
+    ("ramazan@gmail.com", "abcd1234", "1992-01-25"),
+    ("nikita.python@gmail.com", "thebest123", "2000-08-26"),
+    ("tilek@gmail.com", "moonsun2023", "2002-01-15");
+
+# ЗАВАНТАЖУЄМО ФАЙЛ user_insert.sql ЧЕРЕЗ MariaDB;
+  source /home/www/code/python_kazah/sql_ptoject/user_insert.sql
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ User;
+  SELECT * FROM User;
++----+-------------------------+-------------+------------+-----------+----------+---------------------+
+| id | email                   | password    | birthday   | is_active | is_staff | created             |
++----+-------------------------+-------------+------------+-----------+----------+---------------------+
+|  1 | sowdirect@gmail.com     | 52432225    | 1992-03-24 |         1 |        0 | 2023-02-22 13:18:57 |
+|  2 | ramazan@gmail.com       | abcd1234    | 1992-01-25 |         1 |        0 | 2023-02-22 13:18:57 |
+|  3 | nikita.python@gmail.com | thebest123  | 2000-08-26 |         1 |        0 | 2023-02-22 13:18:57 |
+|  4 | tilek@gmail.com         | moonsun2023 | 2002-01-15 |         1 |        0 | 2023-02-22 13:18:57 |
++----+-------------------------+-------------+------------+-----------+----------+---------------------+
+4 rows in set (0.000 sec)
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ Shop_order ЧЕРЕЗ ФАЙЛ order_insert.sql;
+  INSERT INTO Shop_order(user_id, status, address, mobile)
+VALUES
+    ("1", "new", "Ahunbaeva 95", "0999134494"),
+    ("2", "confirmed", "Baitik Vatyra 7A", "0777 666 444"),
+    ("4", "new", "Київська 78/2", "0555333222");
+
+# ЗАВАНТАЖУЄМО ФАЙЛ order_insert.sql ЧЕРЕЗ MariaDB;
+  source /home/www/code/python_kazah/sql_ptoject/order_insert.sql
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Shop_order;
+  SELECR * FROM Shop_order;
++----+---------+-----------+-----------------------+--------------+------------+---------------------+
+| id | user_id | status    | address               | mobile       | is_archive | created             |
++----+---------+-----------+-----------------------+--------------+------------+---------------------+
+|  1 |       1 | new       | Ahunbaeva 95          | 0999134494   |          0 | 2023-02-22 13:54:34 |
+|  2 |       2 | confirmed | Baitik Vatyra 7A      | 0777 666 444 |          0 | 2023-02-22 13:54:34 |
+|  3 |       4 | new       | Київська 78/2         | 0555333222   |          0 | 2023-02-22 13:54:34 |
++----+---------+-----------+-----------------------+--------------+------------+---------------------+
+3 rows in set (0.000 sec)
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ Order_item ЧЕРЕЗ ФАЙЛ item_insert.sql;
+  INSERT INTO Order_item(order_id, product_id, quantity)
+  VALUES
+    (1, 2, 10),
+    (1, 3, 5),
+    (1, 6, 1),
+    (2, 1, 20),
+    (2, 5, 7),
+    (3, 2, 10),
+    (3, 6, 5);
+
+# ЗАВАНТАЖУЄМО ФАЙЛ item_insert.sql;
+  source /home/www/code/python_kazah/sql_ptoject/item_insert.sql
+
+# ПЕРЕГЛЯДАЄМО ТАБЛИЦЮ Order_item;
+  SELECT * FROM Order_item;
++----+----------+------------+----------+
+| id | order_id | product_id | quantity |
++----+----------+------------+----------+
+|  1 |        1 |          2 |       10 |
+|  2 |        1 |          3 |        5 |
+|  3 |        1 |          6 |        1 |
+|  4 |        2 |          1 |       20 |
+|  5 |        2 |          5 |        7 |
+|  6 |        3 |          2 |       10 |
+|  7 |        3 |          6 |        5 |
++----+----------+------------+----------+
+7 rows in set (0.001 sec)
+
+# ЗАВДАННЯ
+  ВИВЕСТИ ТАБЛИЦЮ Order_item З НОМЕРОМ ЗАМОВЛЕННЯ, З НАЗВОЮ ПРОДУКТА, КІЛЬКОСТЬ.
+  SELECT Order_item.order_id, Product.name, Order_item.quantity FROM Order_item
+    -> LEFT JOIN Product ON Order_item.product_id=Product.id;
++----------+------------------------------------------------------------+----------+
+| order_id | name                                                       | quantity |
++----------+------------------------------------------------------------+----------+
+|        1 | Iphone 14 Pro                                              |       10 |
+|        1 | Ipad 12 Mini                                               |        5 |
+|        1 | 23.8 Монітор Asus VA247HE чорний                           |        1 |
+|        2 | 13.3 Ноутбук Apple MacBook Air золотистий                  |       20 |
+|        2 | PocketBook 606 White                                       |        7 |
+|        3 | Iphone 14 Pro                                              |       10 |
+|        3 | 23.8 Монітор Asus VA247HE чорний                           |        5 |
++----------+------------------------------------------------------------+----------+
+7 rows in set (0.001 sec)
+
+# СОРТУЄМО ПО СТОВПЦЮ quantity;
+  SELECT Order_item.order_id, Product.name, Order_item.quantity FROM Order_item
+    -> LEFT JOIN Product ON Order_item.product_id=Product.id ORDER BY quantity;
++----------+------------------------------------------------------------+----------+
+| order_id | name                                                       | quantity |
++----------+------------------------------------------------------------+----------+
+|        1 | 23.8 Монітор Asus VA247HE чорний                           |        1 |
+|        1 | Ipad 12 Mini                                               |        5 |
+|        3 | 23.8 Монітор Asus VA247HE чорний                           |        5 |
+|        2 | PocketBook 606 White                                       |        7 |
+|        1 | Iphone 14 Pro                                              |       10 |
+|        3 | Iphone 14 Pro                                              |       10 |
+|        2 | 13.3 Ноутбук Apple MacBook Air золотистий                  |       20 |
++----------+------------------------------------------------------------+----------+
+7 rows in set (0.001 sec)
+
+# СУМУЄМО quantity
+  SELECT Order_item.order_id, SUM(quantity) as total_quantity FROM Order_item
+    -> GROUP BY Order_item.order_id;
++----------+----------------+
+| order_id | total_quantity |
++----------+----------------+
+|        1 |             16 |
+|        2 |             27 |
+|        3 |             15 |
++----------+----------------+
+3 rows in set (0.002 sec)
+
+# СУМУЄМО ТА ГРУПУЄМО ВАРТІСТЬ ЗАМОВЛЕННЯ
+  SELECT
+    -> Order_item.order_id,
+    -> SUM(Order_item.quantity) AS total_quantity,
+    -> SUM(Order_item.quantity * Product.price) AS total_sum
+    -> FROM Order_item
+    -> LEFT JOIN Product ON Order_item.Product_id=Product.id
+    -> GROUP BY Order_item.order_id;
++----------+----------------+-----------+
+| order_id | total_quantity | total_sum |
++----------+----------------+-----------+
+|        1 |             16 |  13140.00 |
+|        2 |             27 |  24840.00 |
+|        3 |             15 |  10740.00 |
++----------+----------------+-----------+
+3 rows in set (0.000 sec)
+
+# ЗАГАЛЬНА СУМА ЗАМОВЛЕНЬ
+  SELECT SUM(Order_item.quantity * Product.price) AS total_sum FROM Order_item
+    -> LEFT JOIN Product ON Order_item.product_id=Product.id;
++-----------+
+| total_sum |
++-----------+
+|  48720.00 |
++-----------+
+1 row in set (0.002 sec)
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ Shop_order;
+  INSERT INTO Shop_order(user_id, status, address, mobile)
+    -> VALUES
+    -> ("4", "confirmed", "Київська 78/2", "0555333222");
+
+# ВНОСИМО ДАНІ В ТАБЛИЦЮ Order_item;
+  INSERT INTO Order_item(order_id, product_id, quantity)
+    -> VALUES (4, 1, 10), (4, 5, 24);
+
+# ГРУПУЄМО ТА СУМУЄМО ПО User_id
+  SELECT Shop_order.user_id, SUM(Order_item.quantity * Product.price) AS total_sum
+    -> FROM Order_item
+    -> LEFT JOIN Shop_order ON Order_item.order_id=Shop_order.id
+    -> LEFT JOIN Product ON Order_item.product_id=Product.id
+    -> GROUP BY Shop_order.user_id;
++---------+-----------+
+| user_id | total_sum |
++---------+-----------+
+|       1 |  13140.00 |
+|       2 |  24840.00 |
+|       4 |  25620.00 |
++---------+-----------+
+3 rows in set (0.001 sec)
+
+# ГРУПУЄМО ТА СУМУЄМО ПО User.id З ВИВОДОМ email;
+  SELECT Shop_order.id, User.email, SUM(Order_item.quantity * Product.price)
+    -> AS total_sum
+    -> FROM Order_item
+    -> LEFT JOIN Shop_order ON Order_item.order_id=Shop_order.id
+    -> LEFT JOIN Product ON Order_item.product_id=Product.id
+    -> LEFT JOIN User ON Shop_order.user_id=User.id
+    -> GROUP BY Shop_order.user_id;
++------+---------------------+-----------+
+| id   | email               | total_sum |
++------+---------------------+-----------+
+|    1 | sowdirect@gmail.com |  13140.00 |
+|    2 | ramazan@gmail.com   |  24840.00 |
+|    3 | tilek@gmail.com     |  25620.00 |
++------+---------------------+-----------+
+3 rows in set (0.001 sec)
+
+# ЗАВДАННЯ
+  ЗНАЙДІТЬ КІЛЬКІСТЬ ЗАМОВЛЕНЬ ГРУПУЮЧИ ПО СТАТУСУ new.
+  SELECT Shop_order.status, COUNT(Shop_order.id) as total_status FROM Shop_order
+    -> GROUP BY Shop_order.status;
++-----------+--------------+
+| status    | total_status |
++-----------+--------------+
+| confirmed |            2 |
+| new       |            2 |
++-----------+--------------+
+2 rows in set (0.001 sec)
+
+  ЗНАЙДІТЬ СУМУ ВСІХ ЗАМОВЛЕНЬ ГРУПУЮЧИ ЇХ ПО СТАТУСУ.
+  SELECT Shop_order.id, Shop_order.status, SUM(Order_item.quantity * Product.price)
+    -> AS total_sum
+    -> FROM Order_item
+    -> LEFT JOIN Shop_order ON Order_item.order_id=Shop_order.id
+    -> LEFT JOIN Product ON Order_item.product_id=Product.id
+    -> GROUP BY Shop_order.status;
++------+-----------+-----------+
+| id   | status    | total_sum |
++------+-----------+-----------+
+|    2 | confirmed |  39720.00 |
+|    1 | new       |  23880.00 |
++------+-----------+-----------+
+2 rows in set (0.000 sec)
+
