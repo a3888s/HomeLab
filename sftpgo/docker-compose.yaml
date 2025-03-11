@@ -1,0 +1,71 @@
+---
+
+networks:
+  sftpgo-net:
+    driver: bridge
+
+volumes:
+  traefik-letsencrypt:
+
+services:
+  # 🔹 Traefik - зворотній проксі для HTTPS
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=true"  # Панель керування Traefik
+      - "--providers.docker=false"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=mail@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-letsencrypt:/letsencrypt"
+
+    networks:
+      - sftpgo-net
+
+  # 🔹 SFTPGo - основний сервіс
+  sftpgo:
+    image: drakkan/sftpgo:v2.6
+    container_name: sftpgo
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+      - "2022:2022"   # SFTP
+      - "2121:2121"   # FTP
+      - "10080:10080" # WebDAV
+      - "50000-50100:50000-50100" # Пасивні порти FTP
+    volumes:
+      - /srv/sftpgo/data:/srv/sftpgo
+    environment:
+      - SFTPGO_HTTPD__BINDINGS__0__PORT=${SFTPGO_HTTPD__BINDINGS__0__PORT}
+      - SFTPGO_HTTPD__BINDINGS__0__ADDRESS=${SFTPGO_HTTPD__BINDINGS__0__ADDRESS}
+      - SFTPGO_DATA_PROVIDER__CREATE_DEFAULT_ADMIN=${SFTPGO_DATA_PROVIDER__CREATE_DEFAULT_ADMIN}
+      - SFTPGO_DATA_PROVIDER__DRIVER=${SFTPGO_DATA_PROVIDER__DRIVER}
+      - SFTPGO_DATA_PROVIDER__NAME=${SFTPGO_DATA_PROVIDER__NAME}
+      - SFTPGO_DEFAULT_ADMIN_USERNAME=${SFTPGO_DEFAULT_ADMIN_USERNAME}
+      - SFTPGO_DEFAULT_ADMIN_PASSWORD=${SFTPGO_DEFAULT_ADMIN_PASSWORD}
+      - SFTPGO_WEBDAVD__BINDINGS__0__PORT=${SFTPGO_WEBDAVD__BINDINGS__0__PORT}
+      - SFTPGO_FTPD__BINDINGS__0__PORT=${SFTPGO_FTPD__BINDINGS__0__PORT}
+      - SFTPGO_FTPD__BINDINGS__0__FORCE_PASSIVE_IP=${SFTPGO_FTPD__BINDINGS__0__FORCE_PASSIVE_IP}
+
+    labels:
+      - "traefik.enable=true"
+
+      # 🔹 HTTPS маршрут для веб-інтерфейсу SFTPGo
+      - "traefik.http.routers.sftpgo.rule=Host(`domain`)"
+      - "traefik.http.routers.sftpgo.entrypoints=websecure"
+      - "traefik.http.routers.sftpgo.tls.certresolver=letsencrypt"
+      - "traefik.http.services.sftpgo.loadbalancer.server.port=8080"
+
+    networks:
+      - sftpgo-net
