@@ -1,4 +1,4 @@
----
+
 Щоб успішно імпортувати 5000 користувачів у LLDAP із користувацькими полями (`ats-2`, `mats`, `any_number`), потрібно дотриматись **точного GraphQL формату**, в якому атрибути передаються окремим масивом об’єктів виду:
 
 ```json
@@ -106,4 +106,4 @@ for user in users:
 ```bash
 /app/lldap_set_password --base-url http://localhost:17170 --token <JWT> --username 37898 --password StrongPass123!
 ```
----
+
